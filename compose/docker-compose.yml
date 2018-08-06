@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+    nginx:
+        image: nginx:alpine
+        container_name: nginx
+        restart: always
+        volumes:
+            - ./nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+            - ./nginx/conf.d:/etc/nginx/conf.d:ro
+        ports:
+            - 80:80
+
+    php:
+        image: php:7-fpm-alpine
+        container_name: php
+        restart: always
+        volumes:
+            - ./site/:/var/www/html
+
+    db:
+        image: mariadb:latest
+        container_name: db
+        restart: always
+        volumes:
+            - ./.data/initdb/:/docker-entrypoint-initdb.d
+            - ./.data/db/:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=rootpw
+            - MYSQL_DATABASE=yamroll
+            - MYSQL_USER=admin
+            - MYSQL_PASSWORD=1234
+
+    pma:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        restart: always
+        ports:
+        - "8000:80"
